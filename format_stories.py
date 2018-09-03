@@ -9,13 +9,12 @@ v. 1.0 Last modified 2018-08-31
 
 Problem with 154
 """
-
+from __future__ import print_function
 import sys
 import os
 import json
 import pandas as pd
 import ffmpeg
-import subprocess
 
 # Get current directory
 my_path = sys.path[0]
@@ -46,7 +45,7 @@ s.to_csv('stories.csv', index=False, encoding='utf-8')
 # For every story file
 for i in range(s.shape[0]):
     # Print current file number
-    print "Processing {} of {}".format(i+1, s.shape[0])
+    print("Processing {} of {}".format(i+1, s.shape[0]))
     # Get filepath of current file
     infile = s['path'][i]
     # Get date and time of current file
