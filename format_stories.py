@@ -5,7 +5,7 @@ Parses 'media.json' to determine upload date and time.
 Converts images to video, adds upload date and time to
 vidoes and pictures, and saves a copy of the video.
 
-v. 1.0 Last modified 2018-08-31
+v. 1.0 Last modified 2018-09-03
 """
 from __future__ import print_function
 import sys
@@ -56,23 +56,35 @@ for i in range(s.shape[0]):
     if 'jpg' in infile:
         # Loop the input picture to make a video
         stream = ffmpeg.input(infile, loop=1, r=30)
+        a = ffmpeg.input('anullsrc=cl=mono', f='lavfi')
         # Resize to dimensions of video
         stream = ffmpeg.filter(stream, 'scale', size='640:1136')
         # Overlay date on video file
         stream = add_text(stream, date)
         # Prepare for output
-        out = ffmpeg.output(stream, 'output/{}.mp4'.format(outfile),
+        out = ffmpeg.output(stream, a, 'output/{}.mp4'.format(outfile),
                             **{'t': 5, 'c:v': 'libx264', 'pix_fmt': 'yuv420p'})
     # When the file is a video
     elif 'mp4' in infile:
+        no_audio = False
         # Get the input video file
         stream = ffmpeg.input(infile)
-        # Get video (not audio track)
-        v = stream['v']
+        # Get the metadata of the input file
+        info = ffmpeg.probe(infile)
         # Overlay date on the video
-        v = add_text(v, date)
-        # Prepare for output with audio if possible
-        out = ffmpeg.output(v,'output/{}.mp4'.format(outfile), map='0:a?')
+        stream = add_text(stream, date)
+        # Does the video have an audio track
+        try:
+            info['streams'][1]
+        except IndexError:
+            no_audio = True
+        
+        if no_audio is True:
+            # Add a silent audio track if no audio track exists
+            a = ffmpeg.input('anullsrc=cl=mono', f='lavfi', t=info['streams'][0]['duration'])
+            out = ffmpeg.output(stream, a,  'output/{}.mp4'.format(outfile), map='1:a')
+        elif no_audio is False:
+            out = ffmpeg.output(stream, 'output/{}.mp4'.format(outfile), map='0:a')
 
     # Save the current video
-    ffmpeg.run(out, quiet=True)
+    ffmpeg.run(out, quiet=True, overwrite_output=True)
