@@ -1,6 +1,7 @@
 # Instagram Archive
 The scripts in this repository can be used to create one long video from your downloaded instagram stories.
 You need a few things installed on your computer to make this happen:
+  - [Instagram data download](https://www.cnet.com/how-to/how-to-download-all-your-instagram-data/)
   - Python
   - ffmpeg
 
