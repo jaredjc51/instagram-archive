@@ -6,8 +6,6 @@ Converts images to video, adds upload date and time to
 vidoes and pictures, and saves a copy of the video.
 
 v. 1.0 Last modified 2018-08-31
-
-Problem with 154
 """
 from __future__ import print_function
 import sys
